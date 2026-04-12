@@ -31,7 +31,10 @@ This provides two main components:
 - Network Information menu with detailed network stats
 - Auto Connection toggle to automatically connect to available saved networks
 - Network count display on Refresh Networks option
+- **Remove All Saved Networks** option in Known Connections (keeps current connection)
+- **Back** option in Known Connections menu
 - Works with any launcher (wofi, rofi, dmenu, etc.)
+- Cherry theme color menu
 
 ### How "Try Again" Works (Avoiding System Password Dialog)
 

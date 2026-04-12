@@ -93,10 +93,16 @@ display_menu() {
 			esac
 			;;
 		'rofi')
+			# Cherry theme colors
+			BG="#1F1626"
+			FG="#FFFFFF"
+			BGA="#292030"
+			AC="#D94084"
+			SE="#4F5D95"
 			case $form in
-				1) rofi -dmenu -i -p "$prompt" -theme ~/.config/polybar/forest/scripts/rofi/launcher.rasi -theme-str "window { width: 30%; } element { padding: 8px 8px 8px -15px; } prompt { font: \"Iosevka Nerd Font 10\"; } listview { lines: 8; }" ;;
-				2) rofi -dmenu -p "$prompt" -theme ~/.config/polybar/forest/scripts/rofi/launcher.rasi -theme-str "window { width: 30%; } element { padding: 8px 8px 8px -15px; } prompt { font: \"Iosevka Nerd Font 10\"; } listview { lines: 8; }" ;;
-				3) rofi -dmenu -password -p "$prompt" -theme ~/.config/polybar/forest/scripts/rofi/launcher.rasi -theme-str "window { width: 30%; }" ;;
+				1) rofi -dmenu -p "$prompt" -theme-str "window { background-color: $BG; width: 30%; } element { background-color: $BG; text-color: $FG; padding: 8px 8px 8px -15px; } element selected { background-color: $AC; text-color: $BG; } prompt { background-color: $BG; text-color: $FG; font: \"Iosevka Nerd Font 10\"; } listview { lines: 8; }" ;;
+				2) rofi -dmenu -p "$prompt" -theme-str "window { background-color: $BG; width: 30%; } element { background-color: $BG; text-color: $FG; padding: 8px 8px 8px -15px; } element selected { background-color: $AC; text-color: $BG; } prompt { background-color: $BG; text-color: $FG; font: \"Iosevka Nerd Font 10\"; } listview { lines: 8; }" ;;
+				3) rofi -dmenu -password -p "$prompt" -theme-str "window { background-color: $BG; width: 30%; }" ;;
 			esac
 			;;
 		'wmenu')
@@ -400,17 +406,54 @@ menu_known_connections() {
 	while true; do
 
 		mapfile -t profiles_list < <(nmcli --colors no --get-values TYPE,UUID,NAME connection show | awk -F ':' -v ct="$connection_type" -v icon="$icon" '$1 == ct {print $2 "\\0" icon "  " $3}')
-		chosen=$( (for i in "${profiles_list[@]}"; do echo -e "$i" | cut --delimiter $'\0' --fields 2; done; echo "$icon_close") | display_menu 1 "$tr_known_connections_message")
+		
+		# Get currently connected network (if any)
+		current_conn=$(nmcli -t -f NAME,DEVICE connection show --active 2>/dev/null | grep ":wlan0$" | cut -d: -f1)
+		
+		# Build menu options - show saved networks + remove option + close
+		menu_options=""
+		for i in "${profiles_list[@]}"; do
+			net_name=$(echo -e "$i" | cut --delimiter $'\0' --fields 2)
+			[ -n "$net_name" ] && menu_options="${menu_options}${net_name}"$'\n'
+		done
+		menu_options="${menu_options}${remove_all_networks_message}"$'\n'
+		menu_options="${menu_options}${icon_close}  Back"
+		
+		chosen=$(echo -e "$menu_options" | display_menu 1 "$tr_known_connections_message")
 
 		if [ -z "$chosen" ]; then
 			exit 0
 		elif [[ "$chosen" =~ ^$icon_close ]]; then
 			return
+		elif [[ "$chosen" =~ ^$icon_trash ]]; then
+			# Remove all saved networks except currently connected one
+			sure=$(echo -e "$icon_check\n$icon_close" | display_menu 2 "Remove all saved networks? Current connection '$current_conn' will be kept.")
+			if [[ "$sure" =~ ^$icon_check ]]; then
+				# If connected and not saved, save it first
+				if [ -n "$current_conn" ]; then
+					nmcli connection show "$current_conn" >/dev/null 2>&1 || nmcli connection save "$current_conn" >/dev/null 2>&1 || true
+				fi
+				
+				# Get fresh list of saved connections
+				all_conns=$(nmcli -t -f NAME connection show 2>/dev/null)
+				
+				deleted_count=0
+				while IFS= read -r net_name; do
+					[ -z "$net_name" ] && continue
+					[ "$net_name" = "$current_conn" ] && continue
+					[ "$net_name" = "lo" ] && continue
+					[[ "$net_name" =~ ^Wired ]] && continue
+					nmcli connection delete id "$net_name" 2>/dev/null && deleted_count=$((deleted_count + 1)) || true
+				done <<< "$all_conns"
+				
+				send_notification 1 1 "Networks Removed" "$deleted_count saved networks deleted (current kept)"
+			fi
+			continue
 		fi
 
 		for i in "${profiles_list[@]}"; do
 			if [ "$chosen" = "$(echo -e "$i" | cut --delimiter $'\0' --fields 2)" ]; then
-				eval "$menu_type \"$(sed 's/"/\\"/g' <<< "${chosen:3}")\" \"$(echo -e "$i" | cut --delimiter $'\0' --fields 1)\""
+				eval "$menu_type \"$(sed 's/"/\\"/g' <<< "${chosen}")\" \"$(echo -e "$i" | cut --delimiter $'\0' --fields 1)\""
 				break
 			fi
 		done
@@ -1156,6 +1199,7 @@ tr_disable_message='Disable Wi-Fi'
 tr_enable_message='Enable Wi-Fi'
 tr_interface_message='Interface:'
 tr_known_connections_message='Known connections'
+tr_remove_all_networks_message='Remove All Saved Networks'
 tr_autoconnect_message='Autoconnect'
 tr_ipv4_config_message='DHCP configuration'
 tr_dns4_message='DNS IPv4'
@@ -1338,6 +1382,7 @@ disable_message="$icon_wifi_disable  $tr_disable_message"
 enable_message="$icon_wifi_enable  $tr_enable_message"
 interface_message="$icon_interface  $tr_interface_message"
 known_connections_message="$icon_saved  $tr_known_connections_message"
+remove_all_networks_message="$icon_trash  $tr_remove_all_networks_message"
 autoconnect_message="$icon_automatic  $tr_autoconnect_message"
 ipv4_config_message="$icon_4_1  $tr_ipv4_config_message"
 dns4_message="$icon_4_2  $tr_dns4_message"
