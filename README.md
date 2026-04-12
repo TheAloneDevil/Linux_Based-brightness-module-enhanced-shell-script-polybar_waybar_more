@@ -1,8 +1,6 @@
 # Enhanced Weather Module for Linux Desktop
 
-![Weather Module](Screenshots/1.png)
-
-![Weather Info](Screenshots/2.png)
+![Weather Module](Screenshots/2.png)
 
 <p align="center">
 <img src="Screenshots/3.png" width="45%">
