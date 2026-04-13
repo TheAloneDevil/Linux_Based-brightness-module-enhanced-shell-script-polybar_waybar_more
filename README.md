@@ -102,24 +102,24 @@ modules-right = brightness1-control
 
 ## Font Reference
 
-This module uses the following fonts (T-n = font-n):
+This module uses the following fonts (font-n = T(n+1)):
 
 | Tag | Font Number | Font Name | Size |
 |-----|-------------|-----------|------|
 | T1 | font-0 | Iosevka Nerd Font | 10;4 |
 | T9 | font-8 | Iosevka Nerd Font | 13;4 |
-| T16 | font-16 | Iosevka Nerd Font | 11;-3 |
-| T19 | font-19 | Iosevka Nerd Font | 13;3 |
-| T28 | font-28 | Iosevka Nerd Font | 12;4 |
+| T16 | font-15 | Iosevka Nerd Font | 8;3 |
+| T19 | font-18 | Iosevka Nerd Font | 6;2 |
+| T28 | font-27 | Iosevka Nerd Font | 14;4 |
 
 **Note:** Ensure these fonts are defined in your polybar config. Add to your `config.ini`:
 
 ```ini
 font-0 = "Iosevka Nerd Font:size=10;4"
 font-8 = "Iosevka Nerd Font:size=13;4"
-font-16 = "Iosevka Nerd Font:size=11;-3"
-font-19 = "Iosevka Nerd Font:size=13;3"
-font-28 = "Iosevka Nerd Font:size=12;4"
+font-15 = "Iosevka Nerd Font:size=8;3"
+font-18 = "Iosevka Nerd Font:size=6;2"
+font-27 = "Iosevka Nerd Font:size=14;4"
 ```
 
 ---
