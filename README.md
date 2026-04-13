@@ -31,20 +31,20 @@ sudo apt install ddcutil brightnessctl
 
 ### Step 2: Create Directory
 ```bash
-mkdir -p ~/.config/polybar/forest/scripts
+mkdir -p ~/your_path
 ```
 
 ### Step 3: Copy Files
 ```bash
-cp brightness.sh ~/.config/polybar/forest/scripts/
-cp brightness1.sh ~/.config/polybar/forest/scripts/
-cp user_modules.ini ~/.config/polybar/forest/scripts/
+cp brightness.sh ~/your_path/
+cp brightness1.sh ~/your_path/
+cp user_modules.ini ~/your_path/
 ```
 
 ### Step 4: Make Executable
 ```bash
-chmod +x ~/.config/polybar/forest/scripts/brightness.sh
-chmod +x ~/.config/polybar/forest/scripts/brightness1.sh
+chmod +x ~/your_path/brightness.sh
+chmod +x ~/your_path/brightness1.sh
 ```
 
 ### Step 5: Update Paths in user_modules.ini
@@ -52,25 +52,25 @@ Open `user_modules.ini` in a text editor and edit these specific lines:
 
 | Line | Edit This | Change To |
 |------|-----------|----------|
-| 5 | `exec = ~/.config/polybar/forest/scripts/brightness.sh get` | (keep as-is if using this path) |
+| 5 | `exec = ~/your_path/brightness.sh get` | (keep as-is if using this path) |
 | 6 | `interval = 1` | (keep) |
 | 7 | `tail = true` | (keep) |
 | 8 | `format = <label>` | (keep) |
 | 9 | `format-prefix = "%{T1}"` | (keep) |
 | 10 | `label = %output%` | (keep) |
-| 11 | `scroll-up = ~/.config/polybar/forest/scripts/brightness.sh inc` | (adjust path if different) |
-| 12 | `scroll-down = ~/.config/polybar/forest/scripts/brightness.sh dec` | (adjust path if different) |
+| 11 | `scroll-up = ~/your_path/brightness.sh inc` | (adjust path if different) |
+| 12 | `scroll-down = ~/your_path/brightness.sh dec` | (adjust path if different) |
 | 13 | `cursor-scroll = ns-resize` | (keep) |
-| 17 | `exec = ~/.config/polybar/forest/scripts/brightness1.sh get` | (adjust path if different) |
-| 23 | `scroll-up = ~/.config/polybar/forest/scripts/brightness1.sh inc` | (adjust path if different) |
-| 24 | `scroll-down = ~/.config/polybar/forest/scripts/brightness1.sh dec` | (adjust path if different) |
+| 17 | `exec = ~/your_path/brightness1.sh get` | (adjust path if different) |
+| 23 | `scroll-up = ~/your_path/brightness1.sh inc` | (adjust path if different) |
+| 24 | `scroll-down = ~/your_path/brightness1.sh dec` | (adjust path if different) |
 
 ### Step 6: Enable Module in polybar config
 Open your polybar config file (e.g., `~/.config/polybar/forest/config`):
 
 1. Find the `[module/...]` section (around line 5-10) and add:
 ```ini
-include-file = ~/.config/polybar/forest/scripts/user_modules.ini
+include-file = ~/your_path/user_modules.ini
 ```
 
 2. Find your bar section (e.g., `[bar/top]`) and add `brightness-control` or `brightness1-control` to `modules-right`:
