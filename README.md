@@ -133,3 +133,9 @@ I claim no rights to the original work — only to provide additional support an
 ## Credits
 
 Based on brightness modules for polybar.
+
+---
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
