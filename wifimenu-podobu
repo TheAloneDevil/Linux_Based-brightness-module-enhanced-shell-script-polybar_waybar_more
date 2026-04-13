@@ -94,9 +94,9 @@ display_menu() {
 			;;
 		'rofi')
 			case $form in
-				1) rofi -dmenu -i -p "$prompt" -theme ~/.config/polybar/forest/scripts/rofi/launcher.rasi -theme-str "window { width: 30%; } element { padding: 8px 8px 8px -15px; } prompt { font: \"Iosevka Nerd Font 10\"; } listview { lines: 8; }" ;;
-				2) rofi -dmenu -p "$prompt" -theme ~/.config/polybar/forest/scripts/rofi/launcher.rasi -theme-str "window { width: 30%; } element { padding: 8px 8px 8px -15px; } prompt { font: \"Iosevka Nerd Font 10\"; } listview { lines: 8; }" ;;
-				3) rofi -dmenu -password -p "$prompt" -theme ~/.config/polybar/forest/scripts/rofi/launcher.rasi -theme-str "window { width: 30%; }" ;;
+				1) rofi -dmenu -i -p "$prompt" -theme-str "window { background-color: #1F1626; width: 30%; } element { background-color: #1F1626; text-color: #FFFFFF; padding: 8px 8px 8px -15px; } element selected { background-color: #D94084; text-color: #FFFFFF; } prompt { background-color: #1F1626; text-color: #FFFFFF; font: \"Iosevka Nerd Font 10\"; } listview { background-color: #292030; lines: 8; }" ;;
+				2) rofi -dmenu -p "$prompt" -theme-str "window { background-color: #1F1626; width: 30%; } element { background-color: #1F1626; text-color: #FFFFFF; padding: 8px 8px 8px -15px; } element selected { background-color: #D94084; text-color: #FFFFFF; } prompt { background-color: #1F1626; text-color: #FFFFFF; font: \"Iosevka Nerd Font 10\"; } listview { background-color: #292030; lines: 8; }" ;;
+				3) rofi -dmenu -password -p "$prompt" -theme-str "window { background-color: #1F1626; width: 30%; } element { background-color: #1F1626; text-color: #FFFFFF; } element selected { background-color: #D94084; text-color: #FFFFFF; } prompt { background-color: #1F1626; text-color: #FFFFFF; }" ;;
 			esac
 			;;
 		'wmenu')

@@ -63,4 +63,10 @@ Edit user_modules.ini - change ~/YourPath/ to your path.
 
 ## Credits
 
+## Contribution
+
+This is a customized version of the original wifimenu created by Jesús Arenas (podobu). I, Anindra Mohan Trivedi, have modified it to add modern features and improvements.
+
+## Credits
+
 Based on wifimenu by Jesús Arenas (podobu)
