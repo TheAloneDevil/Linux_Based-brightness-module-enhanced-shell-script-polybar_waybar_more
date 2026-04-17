@@ -18,6 +18,10 @@ This package provides enhanced brightness modules for Linux desktop polybar.
 - Visual brightness indicators (icons + progress)
 - Scroll to adjust brightness
 - Two visual styles: bar and dots
+- Added Watch function for precision icon change
+- get_icon() with color overlay per percentage
+- inc/dec use calculated value
+- watch has sleep at beginning
 
 ---
 
