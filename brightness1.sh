@@ -50,35 +50,32 @@ case "$1" in
             echo "%{F#E6E600}$icon%{F-}$THINSPACE$bar"
         fi
         ;;
+# - inc/dec functions - Use calculated value instead of reading sysfs
     inc)
-        ddc_val=$(get_brightness_ddc)
-        if [ -n "$ddc_val" ] && [ "$ddc_val" -gt 0 ] 2>/dev/null; then
-            newpct=$((ddc_val + 5))
-            [ $newpct -gt 100 ] && newpct=100
-            ddcutil $DDC_DEV setvcp 10 $newpct 2>/dev/null
-        else
-            current=$(brightnessctl -d intel_backlight get 2>/dev/null || echo 0)
-            max=$(brightnessctl -d intel_backlight max 2>/dev/null || echo 100)
-            [ "$max" -eq 0 ] && max=1
-            newval=$((current + max * 5 / 100))
-            [ $newval -gt $max ] && newval=$max
-            brightnessctl -d intel_backlight set $newval 2>/dev/null
-        fi
+        current=$(cat /sys/class/backlight/intel_backlight/brightness 2>/dev/null || echo 0)
+        max=$(cat /sys/class/backlight/intel_backlight/max_brightness 2>/dev/null || echo 100)
+        [ "$max" -eq 0 ] && max=1
+        newval=$((current + max * 5 / 100))
+        [ $newval -gt $max ] && newval=$max
+        brightnessctl -d intel_backlight set $newval 2>/dev/null
+        ddcutil $DDC_DEV setvcp 10 $((newval * 100 / max)) 2>/dev/null
+        sysfs_val=$((newval * 100 / max))
+        icon=$(get_icon "$sysfs_val")
+        bar=$(get_bar "$sysfs_val")
+        echo "%{F#E6E600}$icon%{F-}$THINSPACE$bar"
         ;;
     dec)
-        ddc_val=$(get_brightness_ddc)
-        if [ -n "$ddc_val" ] && [ "$ddc_val" -gt 0 ] 2>/dev/null; then
-            newpct=$((ddc_val - 5))
-            [ $newpct -lt 5 ] && newpct=5
-            ddcutil $DDC_DEV setvcp 10 $newpct 2>/dev/null
-        else
-            current=$(brightnessctl -d intel_backlight get 2>/dev/null || echo 0)
-            max=$(brightnessctl -d intel_backlight max 2>/dev/null || echo 100)
-            [ "$max" -eq 0 ] && max=1
-            newval=$((current - max * 5 / 100))
-            [ $newval -lt 1 ] && newval=1
-            brightnessctl -d intel_backlight set $newval 2>/dev/null
-        fi
+        current=$(cat /sys/class/backlight/intel_backlight/brightness 2>/dev/null || echo 0)
+        max=$(cat /sys/class/backlight/intel_backlight/max_brightness 2>/dev/null || echo 100)
+        [ "$max" -eq 0 ] && max=1
+        newval=$((current - max * 5 / 100))
+        [ $newval -lt 1 ] && newval=1
+        brightnessctl -d intel_backlight set $newval 2>/dev/null
+        ddcutil $DDC_DEV setvcp 10 $((newval * 100 / max)) 2>/dev/null
+        sysfs_val=$((newval * 100 / max))
+        icon=$(get_icon "$sysfs_val")
+        bar=$(get_bar "$sysfs_val")
+        echo "%{F#E6E600}$icon%{F-}$THINSPACE$bar"
         ;;
     icon)
         ddc_val=$(get_brightness_ddc)
@@ -91,5 +88,20 @@ case "$1" in
             icon=$(get_icon "$sysfs_val")
             echo "%{F#E6E600}$icon%{F-}"
         fi
+        ;;
+# - watch function - Move sleep to beginning of loop:
+    watch)
+        last_val=""
+        while true; do
+            sleep 0.15
+            sysfs_val=$(get_brightness_sysfs)
+            [ -z "$sysfs_val" ] && sysfs_val=0
+            if [ "$sysfs_val" != "$last_val" ]; then
+                icon=$(get_icon "$sysfs_val")
+                bar=$(get_bar "$sysfs_val")
+                echo "%{F#E6E600}$icon%{F-}$THINSPACE$bar"
+                last_val="$sysfs_val"
+            fi
+        done
         ;;
 esac
